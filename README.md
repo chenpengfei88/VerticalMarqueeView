@@ -1,6 +1,6 @@
 # VerticalMarqueeView
 
-# 如果使用
+# 如何使用
 
  <com.fe.verticalmarqueeview.MarqueeView
         android:id="@+id/marqueeview"
