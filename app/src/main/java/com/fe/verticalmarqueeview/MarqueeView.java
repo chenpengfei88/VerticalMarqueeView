@@ -17,8 +17,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by chenepengfei on 2016/11/3.
@@ -93,12 +91,12 @@ public class MarqueeView extends View {
     /**
      * 文本最大的宽度
      */
-    private Rect mTextMaxRect;
+    private int mTextMaxWidth;
 
     /**
-     *  文本rect集合
+     *  文本高度
      */
-    private List<Rect> mTextRectList;
+    private int mTextHeight;
 
     /**
      *  画笔
@@ -191,7 +189,7 @@ public class MarqueeView extends View {
         if(lp.width >= 0) {
             width = lp.width;
         } else if(lp.width == ViewGroup.LayoutParams.WRAP_CONTENT){
-            width = mTextMaxRect.width() + mPaddingLeft;
+            width = mTextMaxWidth + mPaddingLeft;
         } else if(lp.width == ViewGroup.LayoutParams.MATCH_PARENT) {
             width = pWidth;
         }
@@ -203,7 +201,7 @@ public class MarqueeView extends View {
         if(lp.height >= 0) {
             height = lp.height;
         } else if(lp.height == ViewGroup.LayoutParams.WRAP_CONTENT) {
-            height = mTextMaxRect.height() + mPaddingTop + mPaddingBottom;
+            height = mTextHeight  + mPaddingTop + mPaddingBottom;
         } else if(lp.height == ViewGroup.LayoutParams.MATCH_PARENT) {
             height = pHeight;
         }
@@ -229,23 +227,15 @@ public class MarqueeView extends View {
     }
 
     private void initTextRect() {
-        if(mTextRectList == null) {
-            mTextRectList = new ArrayList<>(mTextArray.length);
-        } else {
-            if(mTextRectList.size() > 0) mTextRectList.clear();
-        }
         int size = mTextArray.length;
         for(int i = 0; i < size; i++) {
             String text = mTextArray[i];
             Rect rect = new Rect();
             mPaint.getTextBounds(text, 0, text.length(), rect);
-            mTextRectList.add(rect);
-            if(mTextMaxRect == null) {
-                mTextMaxRect = rect;
-            } else {
-                if(rect.width() > mTextMaxRect.width())
-                    mTextMaxRect = rect;
-            }
+            if(mTextHeight == 0)
+                mTextHeight = rect.height();
+            if(rect.width() > mTextMaxWidth)
+                mTextMaxWidth = rect.width();
         }
     }
 
@@ -263,7 +253,7 @@ public class MarqueeView extends View {
             @Override
             public void onGlobalLayout() {
                 mCurrentTextInitMarginTop = mCurrentTextMoveMarginTop = getFontBaseLine();
-                mNextTextInitMarginTop = mNextTextMoveMarginTop = mTextRectList.get(0).height() +  getMeasuredHeight();
+                mNextTextInitMarginTop = mNextTextMoveMarginTop = mTextHeight +  getMeasuredHeight();
                 mTextMoveOffset = mNextTextInitMarginTop - mCurrentTextInitMarginTop;
             }
         });
@@ -299,7 +289,6 @@ public class MarqueeView extends View {
                         va.resume();
                     }
                 }, reRepeatDelayTime);
-
             }
         });
         va.setRepeatCount(-1);
