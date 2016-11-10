@@ -123,6 +123,11 @@ public class MarqueeView extends View {
      */
     private ValueAnimator va;
 
+    /**
+     *  动画是否暂停
+     */
+    private boolean mIsPause;
+
     private float mProgress;
 
     private onItemClickListener mOnItemClickListener;
@@ -286,7 +291,9 @@ public class MarqueeView extends View {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        va.resume();
+                        if(!mIsPause) {
+                            va.resume();
+                        }
                     }
                 }, reRepeatDelayTime);
             }
@@ -319,15 +326,14 @@ public class MarqueeView extends View {
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
     private void pause() {
-        if(va != null) {
-            va.pause();
-        }
+        mIsPause = true;
     }
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
     public void resume() {
-        if(va != null) {
+        if(va != null && va.isPaused()) {
             va.resume();
+            mIsPause = false;
         }
     }
 

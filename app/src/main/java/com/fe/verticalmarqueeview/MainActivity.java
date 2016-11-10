@@ -1,5 +1,7 @@
 package com.fe.verticalmarqueeview;
 
+import android.content.Intent;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -13,18 +15,41 @@ public class MainActivity extends AppCompatActivity {
             "阿Sa自认桃花运不断：一向都有好多",
             "中国民营企业500强发布，华为超联想夺第一"};
 
+    MarqueeView marqueeView;
+
+    Handler handler = new Handler();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        MarqueeView marqueeView = (MarqueeView) findViewById(R.id.marqueeview);
+        marqueeView = (MarqueeView) findViewById(R.id.marqueeview);
         marqueeView.setTextArray(contentArray);
         marqueeView.setOnItemClickListener(new MarqueeView.onItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                Toast.makeText(MainActivity.this, contentArray[position], Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+                intent.putExtra("content", contentArray[position]);
+                startActivity(intent);
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                marqueeView.resume();
+            }
+        }, 1000);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        marqueeView.destory();
     }
 }
